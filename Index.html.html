@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0c0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="人生規劃">
+  <title>人生規劃</title>
+  
+  
+  <style>
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0f;
+  --panel:#12141a;
+  --card:#171a21;
+  --text:#f7f7f8;
+  --muted:#a5a8b2;
+  --border:#2b2f3a;
+  --accent:#8b5cf6;
+  --study:#22c55e;
+  --admin:#ef4444;
+  --music:#8b5cf6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+body{padding:max(18px,env(safe-area-inset-top)) 14px max(26px,env(safe-area-inset-bottom))}
+button,input,select,textarea{font:inherit}
+button{border:0;border-radius:14px;background:var(--accent);color:white;padding:11px 14px;font-weight:600}
+button:active{transform:scale(.98)}
+.ghost{background:#171a21;border:1px solid var(--border);color:var(--text)}
+.danger{background:#7f1d1d}
+.hidden{display:none!important}
+.app{max-width:980px;margin:auto;display:grid;gap:16px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{margin:0;font-size:28px} h2{margin:0;font-size:18px} h3{margin:0 0 12px}
+p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px}
+.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;margin-top:5px;font-size:18px}
+.segmented{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:5px}
+.segmented button{background:transparent;color:var(--muted);padding:10px}
+.segmented button.active{background:var(--accent);color:white}
+.range-controls{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:end}
+.datebox{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px 11px}
+.datebox span{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.datebox input{width:100%;border:0;background:transparent;color:var(--text);padding:0}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:14px}
+.section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.legend .study{background:var(--study)}.legend .admin{background:var(--admin)}.legend .music{background:var(--music)}
+.timeline-wrap{overflow:hidden;border:1px solid var(--border);border-radius:14px}
+.timeline-header,.timeline-row{display:grid;grid-template-columns:150px minmax(0,1fr)}
+.timeline-header{min-height:42px;background:#101218;border-bottom:1px solid var(--border)}
+.timeline-label,.row-label{border-right:1px solid var(--border);padding:9px;font-size:12px}
+.ticks,.bar-track{position:relative;min-height:42px;overflow:hidden}
+.tick,.gridline{position:absolute;top:0;bottom:0;border-left:1px solid var(--border)}
+.tick{padding:7px 0 0 4px;font-size:10px;color:var(--muted);white-space:nowrap}
+.timeline-row{min-height:54px;border-bottom:1px solid var(--border)}.timeline-row:last-child{border-bottom:0}
+.row-label b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-label span{font-size:10px;color:var(--muted)}
+.task-bar{position:absolute;top:13px;height:27px;border-radius:9px;padding:5px 7px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:4px}
+.task-bar.study{background:var(--study)}.task-bar.admin{background:var(--admin)}.task-bar.music{background:var(--music)}
+.editor{display:grid;gap:10px}
+.edit-card{background:var(--card);border:1px solid var(--border);border-left:5px solid var(--accent);border-radius:15px;padding:11px;display:grid;gap:9px}
+.edit-card.study{border-left-color:var(--study)}.edit-card.admin{border-left-color:var(--admin)}.edit-card.music{border-left-color:var(--music)}
+.edit-top{display:grid;grid-template-columns:1fr 145px;gap:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{font-size:12px;color:var(--muted)}
+input,select,textarea{width:100%;margin-top:4px;border:1px solid var(--border);border-radius:12px;background:#0f1116;color:var(--text);padding:10px}
+textarea{resize:vertical}
+.edit-actions,.actions,.dialog-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:7px;color:var(--text);margin-right:auto}.check input{width:auto;margin:0}
+.file-label{display:inline-block;padding:11px 14px;font-weight:600}.file-label input{display:none}
+.roadmap{display:flex;align-items:center;justify-content:space-between;gap:8px;overflow:auto;padding:2px}
+.roadmap div{min-width:145px;background:var(--card);border:1px solid var(--border);border-radius:15px;padding:11px}.roadmap b,.roadmap span{display:block}.roadmap span{font-size:12px;color:var(--muted);margin-top:3px}.roadmap em{font-style:normal;color:var(--muted)}
+dialog{width:min(92vw,520px);border:1px solid var(--border);border-radius:20px;background:var(--panel);color:var(--text);padding:18px}dialog::backdrop{background:#0009}
+#taskForm{display:grid;gap:10px}
+@media(max-width:640px){
+  .summary{grid-template-columns:repeat(2,1fr)}
+  .range-controls{grid-template-columns:auto 1fr auto}
+  #nextBtn{grid-column:3} #todayBtn{display:none}
+  .section-head{flex-direction:column}
+  .timeline-header,.timeline-row{grid-template-columns:102px minmax(0,1fr)}
+  .edit-top,.two{grid-template-columns:1fr}
+  .roadmap{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>人生規劃</h1>
+        <p id="subtitle">2026–2030 Life Roadmap</p>
+      </div>
+      <button id="installBtn" class="ghost hidden">安裝 App</button>
+    </header>
+
+    <section class="summary">
+      <div class="metric"><span>視圖</span><strong id="viewName">月</strong></div>
+      <div class="metric"><span>任務</span><strong id="countVisible">0</strong></div>
+      <div class="metric"><span>完成</span><strong id="countDone">0</strong></div>
+      <div class="metric"><span>主線</span><strong id="phaseName">準備期</strong></div>
+    </section>
+
+    <nav class="segmented" aria-label="時間單位">
+      <button data-unit="year">年</button>
+      <button data-unit="month" class="active">月</button>
+      <button data-unit="week">週</button>
+      <button data-unit="day">日</button>
+    </nav>
+
+    <section class="range-controls">
+      <button id="prevBtn" class="ghost">←</button>
+      <label class="datebox">
+        <span>定位日期</span>
+        <input id="anchorDate" type="date">
+      </label>
+      <button id="todayBtn" class="ghost">今天</button>
+      <button id="nextBtn" class="ghost">→</button>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>人生時間軸</h2>
+          <p id="rangeText"></p>
+        </div>
+        <div class="legend">
+          <span><i class="study"></i>學業／日文</span>
+          <span><i class="admin"></i>申請／行政</span>
+          <span><i class="music"></i>音樂／職涯</span>
+        </div>
+      </div>
+      <div class="timeline-wrap">
+        <div id="timelineHeader" class="timeline-header"></div>
+        <div id="timelineRows"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>計畫編輯</h2>
+          <p>修改名稱、分類、日期與備註，時間軸會立即更新。</p>
+        </div>
+        <button id="addBtn">＋ 新增</button>
+      </div>
+      <div id="editor" class="editor"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>資料管理</h2>
+          <p>資料會自動存在這台裝置。</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="exportBtn" class="ghost">匯出 JSON</button>
+        <label class="ghost file-label">匯入 JSON<input id="importFile" type="file" accept="application/json"></label>
+        <button id="resetBtn" class="danger">重設初始計畫</button>
+      </div>
+    </section>
+
+    <section class="roadmap">
+      <div><b>2027/06</b><span>銘傳畢業</span></div>
+      <em>→</em>
+      <div><b>2027 下半年</b><span>兵役＋MI申請</span></div>
+      <em>→</em>
+      <div><b>2028/04</b><span>MI TOKYO入學</span></div>
+      <em>→</em>
+      <div><b>2030</b><span>正式音樂職涯</span></div>
+    </section>
+  </main>
+
+  <dialog id="taskDialog">
+    <form method="dialog" id="taskForm">
+      <h3>新增計畫</h3>
+      <label>名稱<input id="newName" required></label>
+      <label>分類
+        <select id="newCat">
+          <option value="study">學業／日文</option>
+          <option value="admin">申請／行政</option>
+          <option value="music">音樂／職涯</option>
+        </select>
+      </label>
+      <div class="two">
+        <label>開始日<input id="newStart" type="date" required></label>
+        <label>結束日<input id="newEnd" type="date" required></label>
+      </div>
+      <label>備註<textarea id="newNote" rows="3"></textarea></label>
+      <div class="dialog-actions">
+        <button value="cancel" class="ghost">取消</button>
+        <button id="saveNew" value="default">加入</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+const DEFAULT_TASKS = [{"name": "確認畢業門檻", "cat": "study", "start": "2026-08-21", "end": "2026-08-31", "done": false, "note": "確認銘傳所有畢業學分與英文校定必修安排"}, {"name": "英文校定必修", "cat": "study", "start": "2026-09-01", "end": "2027-06-15", "done": false, "note": "大一上、大一下、大二下英文校定必修"}, {"name": "N4 → N3", "cat": "study", "start": "2026-08-21", "end": "2026-12-31", "done": false, "note": "建立日文基礎與聽讀能力"}, {"name": "N3 → N2", "cat": "study", "start": "2027-01-01", "end": "2027-07-31", "done": false, "note": "主攻JLPT N2，同時保留BJT 400備案"}, {"name": "Sound Creator作品①", "cat": "music", "start": "2026-09-01", "end": "2026-12-31", "done": false, "note": "第一首完整製作作品"}, {"name": "Sound Creator作品②", "cat": "music", "start": "2027-01-01", "end": "2027-06-15", "done": false, "note": "第二首DAW原創／編曲作品"}, {"name": "BJT第一次", "cat": "study", "start": "2027-03-01", "end": "2027-03-31", "done": false, "note": "目標400分以上"}, {"name": "申請陸軍優先入營", "cat": "admin", "start": "2027-05-01", "end": "2027-06-15", "done": false, "note": "以當年度役政公告為準"}, {"name": "MI線上說明會", "cat": "admin", "start": "2027-05-01", "end": "2027-06-30", "done": false, "note": "AO前置條件之一"}, {"name": "銘傳大學畢業", "cat": "study", "start": "2027-06-15", "end": "2027-06-15", "done": false, "note": "金融科技系"}, {"name": "JLPT N2", "cat": "study", "start": "2027-07-01", "end": "2027-07-31", "done": false, "note": "正式日期依2027公告調整"}, {"name": "陸軍4個月兵役", "cat": "admin", "start": "2027-07-15", "end": "2027-11-15", "done": false, "note": "此為理想情境，可依實際梯次修改"}, {"name": "MI AO Entry", "cat": "admin", "start": "2027-08-15", "end": "2027-09-30", "done": false, "note": "以2028年度募集要項為準"}, {"name": "MI AO正式出願", "cat": "admin", "start": "2027-09-01", "end": "2027-10-31", "done": false, "note": "Sound Creator Course"}, {"name": "MI線上面試", "cat": "admin", "start": "2027-10-01", "end": "2027-10-31", "done": false, "note": "海外／遠距離考生"}, {"name": "一般入學備案", "cat": "admin", "start": "2027-11-01", "end": "2027-12-20", "done": false, "note": "AO未完成時切換一般入學"}, {"name": "COE／學費程序", "cat": "admin", "start": "2027-12-15", "end": "2028-02-29", "done": false, "note": "錄取後海外學生入學程序"}, {"name": "東京住宿／赴日準備", "cat": "admin", "start": "2028-01-01", "end": "2028-03-15", "done": false, "note": "住宿、預算、搬家、生活行政"}, {"name": "日本留學簽證", "cat": "admin", "start": "2028-02-01", "end": "2028-03-01", "done": false, "note": "依COE核發進度"}, {"name": "前往東京", "cat": "admin", "start": "2028-03-15", "end": "2028-03-31", "done": false, "note": "預留開學前適應時間"}, {"name": "MI TOKYO Sound Creator", "cat": "study", "start": "2028-04-01", "end": "2030-03-31", "done": false, "note": "兩年制"}, {"name": "MI第一年作品累積", "cat": "music", "start": "2028-04-01", "end": "2029-03-31", "done": false, "note": "作品、人脈、合作"}, {"name": "拓展日本音樂人脈", "cat": "music", "start": "2028-06-01", "end": "2030-12-31", "done": false, "note": "樂手、歌手、製作人、業界"}, {"name": "第一次外部合作", "cat": "music", "start": "2028-11-01", "end": "2028-12-31", "done": false, "note": "嘗試非同班作業型合作"}, {"name": "Producer Portfolio v1", "cat": "music", "start": "2028-08-01", "end": "2028-12-31", "done": false, "note": "整理可公開展示的製作作品"}, {"name": "開始低價／友情價接案", "cat": "music", "start": "2029-06-01", "end": "2029-09-30", "done": false, "note": "開始取得第一次音樂收入"}, {"name": "混音＋Vocal Production強化", "cat": "music", "start": "2029-07-01", "end": "2029-12-31", "done": false, "note": "建立可市場化能力"}, {"name": "日本業界求職／實習", "cat": "admin", "start": "2029-09-01", "end": "2030-03-31", "done": false, "note": "同步準備畢業後出路"}, {"name": "累積正式合作Credit", "cat": "music", "start": "2029-11-01", "end": "2030-12-31", "done": false, "note": "正式作品與合作紀錄"}, {"name": "畢業作品／Portfolio最終版", "cat": "music", "start": "2030-01-01", "end": "2030-03-31", "done": false, "note": "用於求職與接案"}, {"name": "MI畢業", "cat": "study", "start": "2030-03-01", "end": "2030-03-31", "done": false, "note": "完成Sound Creator"}, {"name": "正式音樂職涯", "cat": "music", "start": "2030-04-01", "end": "2030-12-31", "done": false, "note": "Producer／Sound Creator為主"}, {"name": "穩定客戶與工作來源", "cat": "music", "start": "2030-05-01", "end": "2030-12-31", "done": false, "note": "建立穩定收入"}, {"name": "2031–2035規劃", "cat": "admin", "start": "2030-12-01", "end": "2030-12-31", "done": false, "note": "下一階段人生規劃"}];
+const STORAGE_KEY = "lifePlannerTasksV1";
+
+let tasks = loadTasks();
+let unit = "month";
+let anchor = new Date("2026-08-21T00:00:00");
+let deferredPrompt = null;
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const D = s => new Date(s + "T00:00:00");
+const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const addDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+const diff = (a,b) => Math.round((b-a)/86400000);
+
+function saveTasks(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
+function loadTasks(){
+  try { const s=localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : structuredClone(DEFAULT_TASKS); }
+  catch { return structuredClone(DEFAULT_TASKS); }
+}
+function range(){
+  const a=new Date(anchor);
+  if(unit==="year") return [new Date(a.getFullYear(),0,1),new Date(a.getFullYear(),11,31)];
+  if(unit==="month") return [new Date(a.getFullYear(),a.getMonth(),1),new Date(a.getFullYear(),a.getMonth()+1,0)];
+  if(unit==="week"){
+    const s=new Date(a); const day=(s.getDay()+6)%7; s.setDate(s.getDate()-day);
+    return [s,addDays(s,6)];
+  }
+  return [new Date(a.getFullYear(),a.getMonth(),a.getDate()),new Date(a.getFullYear(),a.getMonth(),a.getDate())];
+}
+function visible(t,s,e){ return D(t.end)>=s && D(t.start)<=e; }
+function phase(s){
+  if(s < D("2027-06-15")) return "畢業＋日文";
+  if(s < D("2028-04-01")) return "兵役＋申請";
+  if(s < D("2030-04-01")) return "MI＋作品";
+  return "音樂職涯";
+}
+function ticks(s,e){
+  const out=[], total=Math.max(1,diff(s,addDays(e,1)));
+  if(unit==="year"){
+    for(let m=0;m<12;m++){const d=new Date(s.getFullYear(),m,1);out.push({label:`${m+1}月`,pos:diff(s,d)/total*100});}
+  } else if(unit==="month"){
+    const span=diff(s,e)+1, step=span>28?7:5;
+    for(let i=0;i<span;i+=step){const d=addDays(s,i);out.push({label:`${d.getMonth()+1}/${d.getDate()}`,pos:i/total*100});}
+  } else if(unit==="week"){
+    ["一","二","三","四","五","六","日"].forEach((x,i)=>out.push({label:x,pos:i/7*100}));
+  } else out.push({label:`${s.getMonth()+1}/${s.getDate()}`,pos:0});
+  return out;
+}
+function render(){
+  $("#anchorDate").value=fmt(anchor);
+  const [s,e]=range();
+  const vis=tasks.filter(t=>visible(t,s,e)).sort((a,b)=>a.start.localeCompare(b.start));
+  $("#viewName").textContent={year:"年",month:"月",week:"週",day:"日"}[unit];
+  $("#countVisible").textContent=vis.length;
+  $("#countDone").textContent=vis.filter(t=>t.done).length;
+  $("#phaseName").textContent=phase(s);
+  $("#rangeText").textContent=`${fmt(s)} ～ ${fmt(e)}`;
+  $$(".segmented button").forEach(b=>b.classList.toggle("active",b.dataset.unit===unit));
+  renderTimeline(vis,s,e);
+  renderEditor(vis);
+}
+function renderTimeline(vis,s,e){
+  const header=$("#timelineHeader"); header.innerHTML="";
+  const lab=document.createElement("div"); lab.className="timeline-label"; lab.textContent="計畫";
+  const tickBox=document.createElement("div"); tickBox.className="ticks";
+  ticks(s,e).forEach(t=>{const el=document.createElement("div");el.className="tick";el.style.left=t.pos+"%";el.textContent=t.label;tickBox.appendChild(el);});
+  header.append(lab,tickBox);
+
+  const rows=$("#timelineRows"); rows.innerHTML="";
+  if(!vis.length){ rows.innerHTML='<div style="padding:14px;color:var(--muted);font-size:13px">這個區間目前沒有計畫。</div>'; return; }
+  const total=Math.max(1,diff(s,addDays(e,1)));
+  vis.forEach(t=>{
+    const row=document.createElement("div"); row.className="timeline-row";
+    const label=document.createElement("div"); label.className="row-label";
+    label.innerHTML=`<b>${escapeHtml(t.done?"✓ "+t.name:t.name)}</b><span>${t.start} → ${t.end}</span>`;
+    const track=document.createElement("div"); track.className="bar-track";
+    ticks(s,e).forEach(x=>{const g=document.createElement("div");g.className="gridline";g.style.left=x.pos+"%";track.appendChild(g);});
+    const bs=D(t.start)>s?D(t.start):s, be=D(t.end)<e?D(t.end):e;
+    const left=Math.max(0,diff(s,bs)/total*100);
+    const width=unit==="day"?100:Math.max(1,diff(bs,addDays(be,1))/total*100);
+    const bar=document.createElement("div"); bar.className=`task-bar ${t.cat}`;
+    bar.style.left=left+"%"; bar.style.width=Math.min(100-left,width)+"%"; bar.textContent=t.name;
+    track.appendChild(bar); row.append(label,track); rows.appendChild(row);
+  });
+}
+function renderEditor(vis){
+  const root=$("#editor"); root.innerHTML="";
+  vis.forEach(t=>{
+    const i=tasks.indexOf(t);
+    const card=document.createElement("div"); card.className=`edit-card ${t.cat}`;
+    card.innerHTML=`
+      <div class="edit-top">
+        <label>計畫名稱<input class="name" value="${escapeAttr(t.name)}"></label>
+        <label>分類<select class="cat">
+          <option value="study">學業／日文</option>
+          <option value="admin">申請／行政</option>
+          <option value="music">音樂／職涯</option>
+        </select></label>
+      </div>
+      <div class="two">
+        <label>開始日<input class="start" type="date" value="${t.start}"></label>
+        <label>結束日<input class="end" type="date" value="${t.end}"></label>
+      </div>
+      <label>備註<textarea class="note" rows="2">${escapeHtml(t.note||"")}</textarea></label>
+      <div class="edit-actions">
+        <label class="check"><input class="done" type="checkbox" ${t.done?"checked":""}> 完成</label>
+        <button class="delete ghost" type="button">刪除</button>
+      </div>`;
+    root.appendChild(card);
+    card.querySelector(".cat").value=t.cat;
+    card.querySelector(".name").addEventListener("input",e=>{t.name=e.target.value;saveTasks();renderTimeline(tasks.filter(x=>visible(x,...range())),...range());});
+    card.querySelector(".cat").addEventListener("change",e=>{t.cat=e.target.value;saveTasks();render();});
+    card.querySelector(".start").addEventListener("change",e=>{t.start=e.target.value;if(t.end<t.start)t.end=t.start;saveTasks();render();});
+    card.querySelector(".end").addEventListener("change",e=>{t.end=e.target.value;if(t.end<t.start)t.start=t.end;saveTasks();render();});
+    card.querySelector(".note").addEventListener("input",e=>{t.note=e.target.value;saveTasks();});
+    card.querySelector(".done").addEventListener("change",e=>{t.done=e.target.checked;saveTasks();render();});
+    card.querySelector(".delete").addEventListener("click",()=>{tasks.splice(i,1);saveTasks();render();});
+  });
+}
+function move(n){
+  if(unit==="year") anchor=new Date(anchor.getFullYear()+n,anchor.getMonth(),Math.min(anchor.getDate(),28));
+  if(unit==="month") anchor=new Date(anchor.getFullYear(),anchor.getMonth()+n,Math.min(anchor.getDate(),28));
+  if(unit==="week") anchor=addDays(anchor,7*n);
+  if(unit==="day") anchor=addDays(anchor,n);
+  render();
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+function escapeAttr(s){return escapeHtml(s);}
+
+$$(".segmented button").forEach(b=>b.addEventListener("click",()=>{unit=b.dataset.unit;render();}));
+$("#anchorDate").addEventListener("change",e=>{anchor=D(e.target.value);render();});
+$("#prevBtn").addEventListener("click",()=>move(-1));
+$("#nextBtn").addEventListener("click",()=>move(1));
+$("#todayBtn").addEventListener("click",()=>{anchor=new Date();render();});
+
+$("#addBtn").addEventListener("click",()=>{
+  const [s,e]=range();
+  $("#newStart").value=fmt(s); $("#newEnd").value=fmt(e); $("#newName").value=""; $("#newNote").value="";
+  $("#taskDialog").showModal();
+});
+$("#taskForm").addEventListener("submit",e=>{
+  if(e.submitter && e.submitter.id==="saveNew"){
+    e.preventDefault();
+    tasks.push({name:$("#newName").value.trim()||"新的計畫",cat:$("#newCat").value,start:$("#newStart").value,end:$("#newEnd").value,note:$("#newNote").value.trim(),done:false});
+    saveTasks(); $("#taskDialog").close(); render();
+  }
+});
+
+$("#exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(tasks,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="人生規劃備份.json";a.click();URL.revokeObjectURL(a.href);
+});
+$("#importFile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  try{tasks=JSON.parse(await f.text());saveTasks();render();alert("匯入完成");}
+  catch{alert("JSON檔案格式不正確");}
+  e.target.value="";
+});
+$("#resetBtn").addEventListener("click",()=>{
+  if(confirm("確定要恢復最初的2026–2030計畫嗎？目前修改會被清除。")){
+    tasks=structuredClone(DEFAULT_TASKS);saveTasks();render();
+  }
+});
+
+window.addEventListener("beforeinstallprompt",e=>{
+  e.preventDefault();deferredPrompt=e;$("#installBtn").classList.remove("hidden");
+});
+$("#installBtn").addEventListener("click",async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; $("#installBtn").classList.add("hidden");
+});
+
+
+render();
+</script>
+</body>
+</html>
